@@ -43,6 +43,8 @@ spirv::Vendor getVendor(const TargetTriple &triple) {
       return spirv::Vendor::NVIDIA;
     case TargetTripleArch::QC_Adreno:
       return spirv::Vendor::Qualcomm;
+    //case TargetTripleArch::VSI_NPU:
+    //  return spirv::Vendor::Verisilicon;
     case TargetTripleArch::CPU:
       switch (triple.getProduct()) {
         case TargetTripleProduct::SwiftShader:
@@ -67,6 +69,7 @@ spirv::DeviceType getDeviceType(const TargetTriple &triple) {
     case TargetTripleArch::AMD_RDNAv2:
     case TargetTripleArch::NV_Turing:
     case TargetTripleArch::NV_Ampere:
+    case TargetTripleArch::VSI_NPU:
       return spirv::DeviceType::DiscreteGPU;
     case TargetTripleArch::Apple_M1:
     case TargetTripleArch::ARM_Valhall:
@@ -169,6 +172,9 @@ void getExtensions(const TargetTriple &triple,
   if (getVendor(triple) == spirv::Vendor::NVIDIA) {
     extensions.push_back(Extension::VK_NV_cooperative_matrix);
   }
+  //if (getVendor(triple) == spirv::Vendor::Verisilicon) {
+  //  extensions.push_back(Extension::VK_VSI_cooperative_matrix);
+  //}
 }
 
 /// Returns the Vulkan features/limits/capabilities supported by the given
@@ -358,6 +364,22 @@ CapabilitiesAttr getCapabilities(const TargetTriple &triple,
 
       variablePointers = variablePointersStorageBuffer = true;
       break;
+    case TargetTripleArch::VSI_NPU:
+      // TODO:
+      maxComputeSharedMemorySize = 32768;
+      maxComputeWorkGroupInvocations = 128;
+      maxComputeWorkGroupSize = {128, 128, 64};
+      subgroupSize = 1;
+      shaderFloat16 = true;
+      shaderInt8 = shaderInt16 = true;
+      shaderFloat64 = shaderInt64 = false;
+
+      //storageBuffer16BitAccess = storagePushConstant16 = true;
+      //uniformAndStorageBuffer16BitAccess = true;
+      //storageBuffer8BitAccess = storagePushConstant8 = true;
+      //uniformAndStorageBuffer8BitAccess = true;
+      //variablePointers = variablePointersStorageBuffer = true;
+      break; 
   }
 
   auto getBoolAttr = [context](bool value) -> UnitAttr {

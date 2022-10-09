@@ -72,6 +72,9 @@ void convertExtensions(Vulkan::TargetEnvAttr vkTargetEnv,
       case Extension::VK_NV_cooperative_matrix:
         extensions.push_back(spirv::Extension::SPV_NV_cooperative_matrix);
         break;
+      case Extension::VK_VSI_cooperative_matrix:
+        //extensions.push_back(spirv::Extension::SPV_VSI_cooperative_matrix);
+        break;
     }
   }
 }

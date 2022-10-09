@@ -441,6 +441,15 @@ def SPIRVTileAndVectorizeToCooperativeOps : Pass<
     "mlir::iree_compiler::createSPIRVTileAndVectorizeToCooperativeOpsPass()";
 }
 
+def SPIRVTileAndVectorizeToVSICooperativeOps : Pass<
+    "iree-spirv-tile-and-vectorize-to-vsicooperative-ops", "func::FuncOp"> {
+  let summary = "Tile Linalg ops with buffer semantics to subgroups and "
+                "vectorize to vector ops suitable for lowering to SPIR-V "
+                "vsi cooperative ops";
+  let constructor =
+    "mlir::iree_compiler::createSPIRVTileAndVectorizeToVSICooperativeOpsPass()";
+}
+
 def SPIRVTileAndPromote : Pass<"iree-spirv-tile-and-promote", "func::FuncOp"> {
   let summary = "Promote tiled Linalg ops with buffer semantics to use "
                 "workgroup memory and then tile to invocations";
@@ -458,6 +467,13 @@ def SPIRVVectorToCooperativeOps :
   let summary = "Convert vector ops to SPIR-V cooperative ops";
   let constructor =
       "mlir::iree_compiler::createSPIRVVectorToCooperativeOpsPass()";
+}
+
+def SPIRVVectorToVSICooperativeOps :
+    Pass<"iree-spirv-vector-to-vsicooperative-ops", "func::FuncOp"> {
+  let summary = "Convert vector ops to SPIR-V vsicooperative ops";
+  let constructor =
+      "mlir::iree_compiler::createSPIRVVectorToVSICooperativeOpsPass()";
 }
 
 def SPIRVVectorizeLoadStore :

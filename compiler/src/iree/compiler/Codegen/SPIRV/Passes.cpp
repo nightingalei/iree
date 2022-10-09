@@ -266,6 +266,35 @@ void addSPIRVTileAndVectorizeToCooperativeOpsPassPipeline(OpPassManager &pm) {
       createSPIRVVectorToCooperativeOpsPass());
 }
 
+void addSPIRVTileAndVectorizeToVSICooperativeOpsPassPipeline(OpPassManager &pm) {
+  addTileAndDistributeToWorkgroupsPasses(pm);
+
+  auto &nestedModulePM = pm.nest<ModuleOp>();
+
+  addBufferizePasses(nestedModulePM, gpuAllocateWorkgroupMemoryFn);
+
+  nestedModulePM.addPass(createCanonicalizerPass());
+  nestedModulePM.addPass(createCSEPass());
+
+  // Tile and distribute to GPU subgroups and vectorize.
+  nestedModulePM.addNestedPass<func::FuncOp>(
+      createSPIRVTileAndVectorizeToVSICooperativeOpsPass());
+  nestedModulePM.addPass(createCanonicalizerPass());
+  nestedModulePM.addPass(createCSEPass());
+
+  // Perform various vector-level cross-op optimizations like load-store
+  // forwarding, shape casting and casting op cancelling.
+  nestedModulePM.addNestedPass<func::FuncOp>(
+      createOptimizeVectorTransferPass());
+
+  // Fold subview ops is reqiured for converting vector transfer ops into SPIR-V
+  // cooperative ops in the next step.
+  nestedModulePM.addPass(memref::createFoldMemRefAliasOpsPass());
+
+  nestedModulePM.addNestedPass<func::FuncOp>(
+      createSPIRVVectorToVSICooperativeOpsPass());
+}
+
 void addSPIRVTileAndVectorizeWithWorkgroupMemoryPassPipeline(
     OpPassManager &pm) {
   addTileAndDistributeToWorkgroupsPasses(pm);

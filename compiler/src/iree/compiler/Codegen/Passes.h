@@ -438,6 +438,11 @@ void addSPIRVTileAndVectorizePassPipeline(OpPassManager &pm);
 /// matrix code.
 void addSPIRVTileAndVectorizeToCooperativeOpsPassPipeline(OpPassManager &pm);
 
+/// Pass pipeline to lower IREE HAL executables by tiling and distributing
+/// to workgroups and subgroups and then vectorizing to SPIR-V vsi cooperative
+/// matrix code.
+void addSPIRVTileAndVectorizeToVSICooperativeOpsPassPipeline(OpPassManager &pm);
+
 /// Pass pipeline to lower IREE HAL executables by tiling and distributing to
 /// workgroups, promoting to use workgroup memory, and then tiling and
 /// distributing to invocations and vectorizing. Each invocation handles a
@@ -482,6 +487,16 @@ createSPIRVTileAndVectorizeToCooperativeOpsPass();
 /// cooperative matrix ops when possible.
 std::unique_ptr<OperationPass<func::FuncOp>>
 createSPIRVVectorToCooperativeOpsPass();
+
+/// Pass to tile Linalg ops with buffer semantics to subgroups and vectorize to
+/// vector ops suitable for lowering to SPIR-V vsi cooperative ops.
+std::unique_ptr<OperationPass<func::FuncOp>>
+createSPIRVTileAndVectorizeToVSICooperativeOpsPass();
+
+/// Pass to convert vector read/write/arithmetic operations to the corresponding
+/// vsi cooperative matrix ops when possible.
+std::unique_ptr<OperationPass<func::FuncOp>>
+createSPIRVVectorToVSICooperativeOpsPass();
 
 /// Pass to tile Linalg ops with tensor semantics to invocations.
 std::unique_ptr<OperationPass<func::FuncOp>> createSPIRVTilePass();

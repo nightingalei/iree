@@ -45,8 +45,10 @@ def SPIRV_VectorizeWithWorkgroupMemory
     : I32EnumAttrCase<"SPIRVVectorizeWithWorkgroupMemory", 18>;
 def SPIRV_SubgroupReduce
     : I32EnumAttrCase<"SPIRVSubgroupReduce", 19>;
+def SPIRV_VectorizeToVSICooperativeOps
+    : I32EnumAttrCase<"SPIRVVectorizeToVSICooperativeOps", 20>;
 
-def VMVX_Default : I32EnumAttrCase<"VMVXDefault", 20>;
+def VMVX_Default : I32EnumAttrCase<"VMVXDefault", 21>;
 def None : I32EnumAttrCase<"None", 0xff>;
 
 // EnumAttrCase for all known lowerings for ops within dispatch region
@@ -64,6 +66,7 @@ def DispatchLoweringPassPipelineEnum
                     SPIRV_Distribute, SPIRV_Vectorize,
                     SPIRV_VectorizeToCooperativeOps,
                     SPIRV_VectorizeWithWorkgroupMemory, SPIRV_SubgroupReduce,
+                    SPIRV_VectorizeToVSICooperativeOps,
                     VMVX_Default, None
                   ]> {
   let cppNamespace = "::mlir::iree_compiler::IREE::Codegen";
